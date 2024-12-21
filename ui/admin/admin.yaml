@@ -1,0 +1,361 @@
+about:
+  date: December 21, 2024 14:19:50
+  recent_changes: works with modified safrs-react-admin
+  version: 0.0.0
+api_root: '{http_type}://{swagger_host}:{port}/{api}'
+authentication: '{system-default}'
+info:
+  number_relationships: 12
+  number_tables: 11
+info_toggle_checked: true
+resources:
+  Appointment:
+    attributes:
+    - label: ' id*'
+      name: id
+      search: true
+      sort: true
+    - name: customer_id
+      required: true
+    - name: service_id
+      required: true
+    - name: shop_id
+      required: true
+    - name: vehicle_id
+      required: true
+    - name: appointment_date
+      required: true
+      type: DATETIME
+    - name: status
+      required: true
+    description: Table for booking customer appointments for service.
+    info_list: Table for booking customer appointments for service.
+    tab_groups:
+    - direction: tomany
+      fks:
+      - appointment_id
+      name: InvoiceList
+      resource: Invoice
+    - direction: tomany
+      fks:
+      - appointment_id
+      name: PartAllocationList
+      resource: PartAllocation
+    - direction: tomany
+      fks:
+      - appointment_id
+      name: ServiceAssignmentList
+      resource: ServiceAssignment
+    - direction: toone
+      fks:
+      - customer_id
+      name: customer
+      resource: Customer
+    - direction: toone
+      fks:
+      - service_id
+      name: service
+      resource: Service
+    - direction: toone
+      fks:
+      - shop_id
+      name: shop
+      resource: Shop
+    - direction: toone
+      fks:
+      - vehicle_id
+      name: vehicle
+      resource: Vehicle
+    type: Appointment
+    user_key: id
+  Customer:
+    attributes:
+    - label: ' first_name*'
+      name: first_name
+      required: true
+      search: true
+      sort: true
+    - name: last_name
+      required: true
+    - name: email
+    - name: phone
+    - name: id
+    description: Table for storing customer details.
+    info_list: Table for storing customer details.
+    tab_groups:
+    - direction: tomany
+      fks:
+      - customer_id
+      name: AppointmentList
+      resource: Appointment
+    - direction: tomany
+      fks:
+      - customer_id
+      name: VehicleList
+      resource: Vehicle
+    type: Customer
+    user_key: first_name
+  Employee:
+    attributes:
+    - label: ' first_name*'
+      name: first_name
+      required: true
+      search: true
+      sort: true
+    - name: shop_id
+      required: true
+    - name: last_name
+      required: true
+    - name: position
+    - name: hire_date
+      required: true
+      type: DATE
+    - name: id
+    description: Table for storing employee details.
+    info_list: Table for storing employee details.
+    tab_groups:
+    - direction: tomany
+      fks:
+      - employee_id
+      name: ServiceAssignmentList
+      resource: ServiceAssignment
+    - direction: toone
+      fks:
+      - shop_id
+      name: shop
+      resource: Shop
+    type: Employee
+    user_key: first_name
+  Invoice:
+    attributes:
+    - label: ' id*'
+      name: id
+      search: true
+      sort: true
+    - name: appointment_id
+      required: true
+    - name: invoice_date
+      required: true
+      type: DATETIME
+    - name: total_amount
+      required: true
+    description: Table to record the invoicing details.
+    info_list: Table to record the invoicing details.
+    tab_groups:
+    - direction: tomany
+      fks:
+      - invoice_id
+      name: PaymentList
+      resource: Payment
+    - direction: toone
+      fks:
+      - appointment_id
+      name: appointment
+      resource: Appointment
+    type: Invoice
+    user_key: id
+  Part:
+    attributes:
+    - label: ' name*'
+      name: name
+      required: true
+      search: true
+      sort: true
+    - name: inventory_count
+      required: true
+    - name: cost_price
+      required: true
+    - name: id
+    description: Table to inventory the car parts in stock.
+    info_list: Table to inventory the car parts in stock.
+    tab_groups:
+    - direction: tomany
+      fks:
+      - part_id
+      name: PartAllocationList
+      resource: PartAllocation
+    type: Part
+    user_key: name
+  PartAllocation:
+    attributes:
+    - label: ' id*'
+      name: id
+      search: true
+      sort: true
+    - name: appointment_id
+      required: true
+    - name: part_id
+      required: true
+    - name: quantity_used
+      required: true
+    description: Table tracking which parts are used for service orders.
+    info_list: Table tracking which parts are used for service orders.
+    tab_groups:
+    - direction: toone
+      fks:
+      - appointment_id
+      name: appointment
+      resource: Appointment
+    - direction: toone
+      fks:
+      - part_id
+      name: part
+      resource: Part
+    type: PartAllocation
+    user_key: id
+  Payment:
+    attributes:
+    - label: ' id*'
+      name: id
+      search: true
+      sort: true
+    - name: invoice_id
+      required: true
+    - name: payment_date
+      required: true
+      type: DATETIME
+    - name: amount_paid
+      required: true
+    description: Table to manage customer payments for invoices.
+    info_list: Table to manage customer payments for invoices.
+    tab_groups:
+    - direction: toone
+      fks:
+      - invoice_id
+      name: invoice
+      resource: Invoice
+    type: Payment
+    user_key: id
+  Service:
+    attributes:
+    - label: ' name*'
+      name: name
+      required: true
+      search: true
+      sort: true
+    - name: description
+    - name: price
+      required: true
+    - name: id
+    description: Table to catalog different service types available.
+    info_list: Table to catalog different service types available.
+    tab_groups:
+    - direction: tomany
+      fks:
+      - service_id
+      name: AppointmentList
+      resource: Appointment
+    type: Service
+    user_key: name
+  ServiceAssignment:
+    attributes:
+    - label: ' id*'
+      name: id
+      search: true
+      sort: true
+    - name: appointment_id
+      required: true
+    - name: employee_id
+      required: true
+    description: Table linking employees to specific appointments.
+    info_list: Table linking employees to specific appointments.
+    tab_groups:
+    - direction: toone
+      fks:
+      - appointment_id
+      name: appointment
+      resource: Appointment
+    - direction: toone
+      fks:
+      - employee_id
+      name: employee
+      resource: Employee
+    type: ServiceAssignment
+    user_key: id
+  Shop:
+    attributes:
+    - label: ' name*'
+      name: name
+      required: true
+      search: true
+      sort: true
+    - name: location
+    - name: contact_number
+    - name: id
+    description: Table to store auto service shop information.
+    info_list: Table to store auto service shop information.
+    tab_groups:
+    - direction: tomany
+      fks:
+      - shop_id
+      name: AppointmentList
+      resource: Appointment
+    - direction: tomany
+      fks:
+      - shop_id
+      name: EmployeeList
+      resource: Employee
+    type: Shop
+    user_key: name
+  Vehicle:
+    attributes:
+    - label: ' id*'
+      name: id
+      search: true
+      sort: true
+    - name: customer_id
+      required: true
+    - name: vin_number
+      required: true
+    - name: make
+      required: true
+    - name: model
+      required: true
+    - name: year
+      required: true
+    description: Table for managing vehicle details for customers.
+    info_list: Table for managing vehicle details for customers.
+    tab_groups:
+    - direction: tomany
+      fks:
+      - vehicle_id
+      name: AppointmentList
+      resource: Appointment
+    - direction: toone
+      fks:
+      - customer_id
+      name: customer
+      resource: Customer
+    type: Vehicle
+    user_key: id
+settings:
+  HomeJS: /admin-app/home.js
+  max_list_columns: 8
+  style_guide:
+    applicationLocales:
+    - en
+    - es
+    currency_symbol: $
+    currency_symbol_position: left
+    date_format: LL
+    decimal_max: '1000000000'
+    decimal_min: '0'
+    decimal_separator: .
+    detail_mode: tab
+    edit_on_mode: dblclick
+    exclude_listpicker: false
+    include_translation: 'false'
+    keycloak_client_id: alsclient
+    keycloak_realm: kcals
+    keycloak_url: http://localhost:8080
+    locale: en
+    max_decimal_digits: '4'
+    min_decimal_digits: '2'
+    new_mode: dialog
+    pick_style: list
+    row_height: small,
+    serviceType: OntimizeEE
+    startSessionPath: /auth/login
+    style: light
+    thousand_separator: ','
+    use_keycloak: 'false'

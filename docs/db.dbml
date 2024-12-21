@@ -1,0 +1,119 @@
+// Copy this text, paste to https://dbdiagram.io/d
+// Or, https://databasediagram.com/app
+// Or, view in VSCode with extension: "DBML Live Preview"
+
+Project DBML {
+  Note: '''
+Appointment: Table for booking customer appointments for service.
+Customer: Table for storing customer details.
+Service: Table to catalog different service types available.
+Shop: Table to store auto service shop information.
+Vehicle: Table for managing vehicle details for customers.
+Employee: Table for storing employee details.
+Invoice: Table to record the invoicing details.
+Part: Table to inventory the car parts in stock.
+PartAllocation: Table tracking which parts are used for service orders.
+Payment: Table to manage customer payments for invoices.
+ServiceAssignment: Table linking employees to specific appointments.
+'''
+}
+
+Table Appointment {
+    id INTEGER [primary key]
+    customer_id INTEGER 
+    vehicle_id INTEGER 
+    shop_id INTEGER 
+    service_id INTEGER 
+    appointment_date DATETIME 
+    status VARCHAR 
+    }
+
+Table Customer {
+    id INTEGER [primary key]
+    first_name VARCHAR 
+    last_name VARCHAR 
+    email VARCHAR 
+    phone VARCHAR 
+    }
+
+Table Service {
+    id INTEGER [primary key]
+    name VARCHAR 
+    description VARCHAR 
+    price INTEGER 
+    }
+
+Table Shop {
+    id INTEGER [primary key]
+    name VARCHAR 
+    location VARCHAR 
+    contact_number VARCHAR 
+    }
+
+Table Vehicle {
+    id INTEGER [primary key]
+    customer_id INTEGER 
+    vin_number VARCHAR 
+    make VARCHAR 
+    model VARCHAR 
+    year INTEGER 
+    }
+
+Table Employee {
+    id INTEGER [primary key]
+    first_name VARCHAR 
+    last_name VARCHAR 
+    position VARCHAR 
+    hire_date DATE 
+    shop_id INTEGER 
+    }
+
+Table Invoice {
+    id INTEGER [primary key]
+    appointment_id INTEGER 
+    invoice_date DATETIME 
+    total_amount INTEGER 
+    }
+
+Table Part {
+    id INTEGER [primary key]
+    name VARCHAR 
+    inventory_count INTEGER 
+    cost_price INTEGER 
+    }
+
+Table PartAllocation {
+    id INTEGER [primary key]
+    part_id INTEGER 
+    appointment_id INTEGER 
+    quantity_used INTEGER 
+    }
+
+Table Payment {
+    id INTEGER [primary key]
+    invoice_id INTEGER 
+    payment_date DATETIME 
+    amount_paid INTEGER 
+    }
+
+Table ServiceAssignment {
+    id INTEGER [primary key]
+    appointment_id INTEGER 
+    employee_id INTEGER 
+    }
+
+
+
+// Relationships
+    Ref: Appointment.(customer_id) < Customer.(id)
+    Ref: Appointment.(service_id) < Service.(id)
+    Ref: Appointment.(shop_id) < Shop.(id)
+    Ref: Appointment.(vehicle_id) < Vehicle.(id)
+    Ref: Vehicle.(customer_id) < Customer.(id)
+    Ref: Employee.(shop_id) < Shop.(id)
+    Ref: Invoice.(appointment_id) < Appointment.(id)
+    Ref: PartAllocation.(appointment_id) < Appointment.(id)
+    Ref: PartAllocation.(part_id) < Part.(id)
+    Ref: Payment.(invoice_id) < Invoice.(id)
+    Ref: ServiceAssignment.(appointment_id) < Appointment.(id)
+    Ref: ServiceAssignment.(employee_id) < Employee.(id)

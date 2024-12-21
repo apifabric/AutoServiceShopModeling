@@ -1,0 +1,263 @@
+{
+    "models": [
+        {
+            "classname": "Shop",
+            "code": "class Shop(Base):\n    \"\"\"description: Table to store auto service shop information.\"\"\"\n    __tablename__ = 'shops'\n\n    id = Column(Integer, primary_key=True, autoincrement=True)\n    name = Column(String, nullable=False)\n    location = Column(String)\n    contact_number = Column(String)",
+            "sqlite_create": "CREATE TABLE \"shops\" (\n\t\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n\t\"name\" VARCHAR NOT NULL,\n\t\"location\" VARCHAR,\n\t\"contact_number\" VARCHAR\n)",
+            "description": "Stores information about service shops such as name, location and contact details.",
+            "name": "Shop"
+        },
+        {
+            "classname": "Customer",
+            "code": "class Customer(Base):\n    \"\"\"description: Table for storing customer details.\"\"\"\n    __tablename__ = 'customers'\n\n    id = Column(Integer, primary_key=True, autoincrement=True)\n    first_name = Column(String, nullable=False)\n    last_name = Column(String, nullable=False)\n    email = Column(String)\n    phone = Column(String)",
+            "sqlite_create": "CREATE TABLE \"customers\" (\n\t\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n\t\"first_name\" VARCHAR NOT NULL,\n\t\"last_name\" VARCHAR NOT NULL,\n\t\"email\" VARCHAR,\n\t\"phone\" VARCHAR\n)",
+            "description": "Contains customer first name, last name, email, and contact phone number.",
+            "name": "Customer"
+        },
+        {
+            "classname": "Vehicle",
+            "code": "class Vehicle(Base):\n    \"\"\"description: Table for managing vehicle details for customers.\"\"\"\n    __tablename__ = 'vehicles'\n\n    id = Column(Integer, primary_key=True, autoincrement=True)\n    customer_id = Column(Integer, ForeignKey('customers.id'), nullable=False)\n    vin_number = Column(String, nullable=False)\n    make = Column(String, nullable=False)\n    model = Column(String, nullable=False)\n    year = Column(Integer, nullable=False)",
+            "sqlite_create": "CREATE TABLE \"vehicles\" (\n\t\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n\t\"customer_id\" INTEGER NOT NULL,\n\t\"vin_number\" VARCHAR NOT NULL,\n\t\"make\" VARCHAR NOT NULL,\n\t\"model\" VARCHAR NOT NULL,\n\t\"year\" INTEGER NOT NULL,\n\tFOREIGN KEY(\"customer_id\") REFERENCES \"customers\"(\"id\")\n)",
+            "description": "Tracks vehicles owned by customers comprising VIN, make, model, and year.",
+            "name": "Vehicle"
+        },
+        {
+            "classname": "Service",
+            "code": "class Service(Base):\n    \"\"\"description: Table to catalog different service types available.\"\"\"\n    __tablename__ = 'services'\n\n    id = Column(Integer, primary_key=True, autoincrement=True)\n    name = Column(String, nullable=False)\n    description = Column(String)\n    price = Column(Integer, nullable=False)",
+            "sqlite_create": "CREATE TABLE \"services\" (\n\t\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n\t\"name\" VARCHAR NOT NULL,\n\t\"description\" VARCHAR,\n\t\"price\" INTEGER NOT NULL\n)",
+            "description": "Contains information about the types of services provided and their pricing.",
+            "name": "Service"
+        },
+        {
+            "classname": "Appointment",
+            "code": "class Appointment(Base):\n    \"\"\"description: Table for booking customer appointments for service.\"\"\"\n    __tablename__ = 'appointments'\n\n    id = Column(Integer, primary_key=True, autoincrement=True)\n    customer_id = Column(Integer, ForeignKey('customers.id'), nullable=False)\n    vehicle_id = Column(Integer, ForeignKey('vehicles.id'), nullable=False)\n    shop_id = Column(Integer, ForeignKey('shops.id'), nullable=False)\n    service_id = Column(Integer, ForeignKey('services.id'), nullable=False)\n    appointment_date = Column(DateTime, nullable=False)\n    status = Column(String, nullable=False)",
+            "sqlite_create": "CREATE TABLE \"appointments\" (\n\t\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n\t\"customer_id\" INTEGER NOT NULL,\n\t\"vehicle_id\" INTEGER NOT NULL,\n\t\"shop_id\" INTEGER NOT NULL,\n\t\"service_id\" INTEGER NOT NULL,\n\t\"appointment_date\" DATETIME NOT NULL,\n\t\"status\" VARCHAR NOT NULL,\n\tFOREIGN KEY(\"customer_id\") REFERENCES \"customers\"(\"id\"),\n\tFOREIGN KEY(\"vehicle_id\") REFERENCES \"vehicles\"(\"id\"),\n\tFOREIGN KEY(\"shop_id\") REFERENCES \"shops\"(\"id\"),\n\tFOREIGN KEY(\"service_id\") REFERENCES \"services\"(\"id\")\n)",
+            "description": "Handles appointment scheduling, associating customers, vehicles with respective services and status.",
+            "name": "Appointment"
+        },
+        {
+            "classname": "Invoice",
+            "code": "class Invoice(Base):\n    \"\"\"description: Table to record the invoicing details.\"\"\"\n    __tablename__ = 'invoices'\n\n    id = Column(Integer, primary_key=True, autoincrement=True)\n    appointment_id = Column(Integer, ForeignKey('appointments.id'), nullable=False)\n    invoice_date = Column(DateTime, nullable=False)\n    total_amount = Column(Integer, nullable=False)",
+            "sqlite_create": "CREATE TABLE \"invoices\" (\n\t\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n\t\"appointment_id\" INTEGER NOT NULL,\n\t\"invoice_date\" DATETIME NOT NULL,\n\t\"total_amount\" INTEGER NOT NULL,\n\tFOREIGN KEY(\"appointment_id\") REFERENCES \"appointments\"(\"id\")\n)",
+            "description": "Captures invoice details after services are rendered including total amounts.",
+            "name": "Invoice"
+        },
+        {
+            "classname": "Payment",
+            "code": "class Payment(Base):\n    \"\"\"description: Table to manage customer payments for invoices.\"\"\"\n    __tablename__ = 'payments'\n\n    id = Column(Integer, primary_key=True, autoincrement=True)\n    invoice_id = Column(Integer, ForeignKey('invoices.id'), nullable=False)\n    payment_date = Column(DateTime, nullable=False)\n    amount_paid = Column(Integer, nullable=False)",
+            "sqlite_create": "CREATE TABLE \"payments\" (\n\t\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n\t\"invoice_id\" INTEGER NOT NULL,\n\t\"payment_date\" DATETIME NOT NULL,\n\t\"amount_paid\" INTEGER NOT NULL,\n\tFOREIGN KEY(\"invoice_id\") REFERENCES \"invoices\"(\"id\")\n)",
+            "description": "Records payments made towards invoices fulfilling the transaction.",
+            "name": "Payment"
+        },
+        {
+            "classname": "Employee",
+            "code": "class Employee(Base):\n    \"\"\"description: Table for storing employee details.\"\"\"\n    __tablename__ = 'employees'\n\n    id = Column(Integer, primary_key=True, autoincrement=True)\n    first_name = Column(String, nullable=False)\n    last_name = Column(String, nullable=False)\n    position = Column(String)\n    hire_date = Column(Date, nullable=False)\n    shop_id = Column(Integer, ForeignKey('shops.id'), nullable=False)",
+            "sqlite_create": "CREATE TABLE \"employees\" (\n\t\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n\t\"first_name\" VARCHAR NOT NULL,\n\t\"last_name\" VARCHAR NOT NULL,\n\t\"position\" VARCHAR,\n\t\"hire_date\" DATE NOT NULL,\n\t\"shop_id\" INTEGER NOT NULL,\n\tFOREIGN KEY(\"shop_id\") REFERENCES \"shops\"(\"id\")\n)",
+            "description": "Holds details on shop employees, including hire date and assigned shop.",
+            "name": "Employee"
+        },
+        {
+            "classname": "Part",
+            "code": "class Part(Base):\n    \"\"\"description: Table to inventory the car parts in stock.\"\"\"\n    __tablename__ = 'parts'\n\n    id = Column(Integer, primary_key=True, autoincrement=True)\n    name = Column(String, nullable=False)\n    inventory_count = Column(Integer, nullable=False)\n    cost_price = Column(Integer, nullable=False)",
+            "sqlite_create": "CREATE TABLE \"parts\" (\n\t\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n\t\"name\" VARCHAR NOT NULL,\n\t\"inventory_count\" INTEGER NOT NULL,\n\t\"cost_price\" INTEGER NOT NULL\n)",
+            "description": "Inventories car parts available in the auto service shop including counts and costs.",
+            "name": "Part"
+        },
+        {
+            "classname": "ServiceAssignment",
+            "code": "class ServiceAssignment(Base):\n    \"\"\"description: Table linking employees to specific appointments.\"\"\"\n    __tablename__ = 'service_assignments'\n\n    id = Column(Integer, primary_key=True, autoincrement=True)\n    appointment_id = Column(Integer, ForeignKey('appointments.id'), nullable=False)\n    employee_id = Column(Integer, ForeignKey('employees.id'), nullable=False)",
+            "sqlite_create": "CREATE TABLE \"service_assignments\" (\n\t\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n\t\"appointment_id\" INTEGER NOT NULL,\n\t\"employee_id\" INTEGER NOT NULL,\n\tFOREIGN KEY(\"appointment_id\") REFERENCES \"appointments\"(\"id\"),\n\tFOREIGN KEY(\"employee_id\") REFERENCES \"employees\"(\"id\")\n)",
+            "description": "Assigns employees to services in appointments as per required skillset.",
+            "name": "ServiceAssignment"
+        },
+        {
+            "classname": "PartAllocation",
+            "code": "class PartAllocation(Base):\n    \"\"\"description: Table tracking which parts are used for service orders.\"\"\"\n    __tablename__ = 'part_allocations'\n\n    id = Column(Integer, primary_key=True, autoincrement=True)\n    part_id = Column(Integer, ForeignKey('parts.id'), nullable=False)\n    appointment_id = Column(Integer, ForeignKey('appointments.id'), nullable=False)\n    quantity_used = Column(Integer, nullable=False)",
+            "sqlite_create": "CREATE TABLE \"part_allocations\" (\n\t\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n\t\"part_id\" INTEGER NOT NULL,\n\t\"appointment_id\" INTEGER NOT NULL,\n\t\"quantity_used\" INTEGER NOT NULL,\n\tFOREIGN KEY(\"part_id\") REFERENCES \"parts\"(\"id\"),\n\tFOREIGN KEY(\"appointment_id\") REFERENCES \"appointments\"(\"id\")\n)",
+            "description": "Tracks which parts are allocated to appointments, determining quantities.",
+            "name": "PartAllocation"
+        }
+    ],
+    "rules": [],
+    "test_data": "Test data for the tables includes 4 rows for each table, including associated derived values such as sums and counts, manually calculated as needed.",
+    "test_data_rows": [
+        {
+            "test_data_row_variable": "shop1",
+            "code": "shop1 = Shop(name=\"AutoCare Plus\", location=\"123 Main St, Springfield\", contact_number=\"555-0199\")"
+        },
+        {
+            "test_data_row_variable": "shop2",
+            "code": "shop2 = Shop(name=\"QuickFix Garage\", location=\"456 Elm St, Shelbyville\", contact_number=\"555-0123\")"
+        },
+        {
+            "test_data_row_variable": "shop3",
+            "code": "shop3 = Shop(name=\"SuperMechanics\", location=\"789 Oak St, Ogdenville\", contact_number=\"555-0456\")"
+        },
+        {
+            "test_data_row_variable": "shop4",
+            "code": "shop4 = Shop(name=\"Piston's Auto\", location=\"321 Maple Ave, North Haverbrook\", contact_number=\"555-0789\")"
+        },
+        {
+            "test_data_row_variable": "customer1",
+            "code": "customer1 = Customer(first_name=\"John\", last_name=\"Doe\", email=\"john.doe@example.com\", phone=\"123-456\")"
+        },
+        {
+            "test_data_row_variable": "customer2",
+            "code": "customer2 = Customer(first_name=\"Jane\", last_name=\"Smith\", email=\"jane.smith@example.com\", phone=\"234-567\")"
+        },
+        {
+            "test_data_row_variable": "customer3",
+            "code": "customer3 = Customer(first_name=\"Jim\", last_name=\"Beam\", email=\"jim.beam@example.com\", phone=\"345-678\")"
+        },
+        {
+            "test_data_row_variable": "customer4",
+            "code": "customer4 = Customer(first_name=\"Jill\", last_name=\"Valentine\", email=\"jill.valentine@example.com\", phone=\"456-789\")"
+        },
+        {
+            "test_data_row_variable": "vehicle1",
+            "code": "vehicle1 = Vehicle(customer_id=customer1.id, vin_number=\"1HGCM82633A004352\", make=\"Honda\", model=\"Accord\", year=2020)"
+        },
+        {
+            "test_data_row_variable": "vehicle2",
+            "code": "vehicle2 = Vehicle(customer_id=customer2.id, vin_number=\"1N4AL3AP5FC123456\", make=\"Nissan\", model=\"Altima\", year=2019)"
+        },
+        {
+            "test_data_row_variable": "vehicle3",
+            "code": "vehicle3 = Vehicle(customer_id=customer3.id, vin_number=\"4T1BF1FK5GU678910\", make=\"Toyota\", model=\"Camry\", year=2018)"
+        },
+        {
+            "test_data_row_variable": "vehicle4",
+            "code": "vehicle4 = Vehicle(customer_id=customer4.id, vin_number=\"3FA6P0HR1KR789012\", make=\"Ford\", model=\"Fusion\", year=2021)"
+        },
+        {
+            "test_data_row_variable": "service1",
+            "code": "service1 = Service(name=\"Oil Change\", description=\"Change engine oil and filter\", price=60)"
+        },
+        {
+            "test_data_row_variable": "service2",
+            "code": "service2 = Service(name=\"Tire Rotation\", description=\"Rotate all four tires\", price=40)"
+        },
+        {
+            "test_data_row_variable": "service3",
+            "code": "service3 = Service(name=\"Brake Inspection\", description=\"Inspect and replace brake pads as needed\", price=100)"
+        },
+        {
+            "test_data_row_variable": "service4",
+            "code": "service4 = Service(name=\"Battery Check\", description=\"Check battery health and charge\", price=30)"
+        },
+        {
+            "test_data_row_variable": "appointment1",
+            "code": "appointment1 = Appointment(customer_id=customer1.id, vehicle_id=vehicle1.id, shop_id=shop1.id, service_id=service1.id, appointment_date=datetime(2023, 1, 15, 10, 30), status=\"Completed\")"
+        },
+        {
+            "test_data_row_variable": "appointment2",
+            "code": "appointment2 = Appointment(customer_id=customer2.id, vehicle_id=vehicle2.id, shop_id=shop2.id, service_id=service2.id, appointment_date=datetime(2023, 2, 12, 11, 00), status=\"Pending\")"
+        },
+        {
+            "test_data_row_variable": "appointment3",
+            "code": "appointment3 = Appointment(customer_id=customer3.id, vehicle_id=vehicle3.id, shop_id=shop3.id, service_id=service3.id, appointment_date=datetime(2023, 3, 10, 9, 00), status=\"Canceled\")"
+        },
+        {
+            "test_data_row_variable": "appointment4",
+            "code": "appointment4 = Appointment(customer_id=customer4.id, vehicle_id=vehicle4.id, shop_id=shop4.id, service_id=service4.id, appointment_date=datetime(2023, 4, 18, 14, 00), status=\"Scheduled\")"
+        },
+        {
+            "test_data_row_variable": "invoice1",
+            "code": "invoice1 = Invoice(appointment_id=appointment1.id, invoice_date=datetime(2023, 1, 16), total_amount=60)"
+        },
+        {
+            "test_data_row_variable": "invoice2",
+            "code": "invoice2 = Invoice(appointment_id=appointment2.id, invoice_date=datetime(2023, 2, 13), total_amount=40)"
+        },
+        {
+            "test_data_row_variable": "invoice3",
+            "code": "invoice3 = Invoice(appointment_id=appointment3.id, invoice_date=datetime(2023, 3, 11), total_amount=0)"
+        },
+        {
+            "test_data_row_variable": "invoice4",
+            "code": "invoice4 = Invoice(appointment_id=appointment4.id, invoice_date=datetime(2023, 4, 19), total_amount=30)"
+        },
+        {
+            "test_data_row_variable": "payment1",
+            "code": "payment1 = Payment(invoice_id=invoice1.id, payment_date=datetime(2023, 1, 17), amount_paid=60)"
+        },
+        {
+            "test_data_row_variable": "payment2",
+            "code": "payment2 = Payment(invoice_id=invoice2.id, payment_date=datetime(2023, 2, 14), amount_paid=40)"
+        },
+        {
+            "test_data_row_variable": "payment3",
+            "code": "payment3 = Payment(invoice_id=invoice3.id, payment_date=None, amount_paid=0)"
+        },
+        {
+            "test_data_row_variable": "payment4",
+            "code": "payment4 = Payment(invoice_id=invoice4.id, payment_date=None, amount_paid=0)"
+        },
+        {
+            "test_data_row_variable": "employee1",
+            "code": "employee1 = Employee(first_name=\"Mike\", last_name=\"Johnson\", position=\"Mechanic\", hire_date=date(2022, 5, 10), shop_id=shop1.id)"
+        },
+        {
+            "test_data_row_variable": "employee2",
+            "code": "employee2 = Employee(first_name=\"Sarah\", last_name=\"Connor\", position=\"Manager\", hire_date=date(2021, 8, 15), shop_id=shop2.id)"
+        },
+        {
+            "test_data_row_variable": "employee3",
+            "code": "employee3 = Employee(first_name=\"Lee\", last_name=\"Van\", position=\"Technician\", hire_date=date(2023, 1, 20), shop_id=shop3.id)"
+        },
+        {
+            "test_data_row_variable": "employee4",
+            "code": "employee4 = Employee(first_name=\"Anna\", last_name=\"Taylor\", position=\"Receptionist\", hire_date=date(2022, 12, 3), shop_id=shop4.id)"
+        },
+        {
+            "test_data_row_variable": "part1",
+            "code": "part1 = Part(name=\"Oil Filter\", inventory_count=200, cost_price=5)"
+        },
+        {
+            "test_data_row_variable": "part2",
+            "code": "part2 = Part(name=\"Brake Pads\", inventory_count=150, cost_price=50)"
+        },
+        {
+            "test_data_row_variable": "part3",
+            "code": "part3 = Part(name=\"Battery\", inventory_count=50, cost_price=70)"
+        },
+        {
+            "test_data_row_variable": "part4",
+            "code": "part4 = Part(name=\"Windshield Wipers\", inventory_count=100, cost_price=10)"
+        },
+        {
+            "test_data_row_variable": "service_assignment1",
+            "code": "service_assignment1 = ServiceAssignment(appointment_id=appointment1.id, employee_id=employee1.id)"
+        },
+        {
+            "test_data_row_variable": "service_assignment2",
+            "code": "service_assignment2 = ServiceAssignment(appointment_id=appointment2.id, employee_id=employee2.id)"
+        },
+        {
+            "test_data_row_variable": "service_assignment3",
+            "code": "service_assignment3 = ServiceAssignment(appointment_id=appointment3.id, employee_id=employee3.id)"
+        },
+        {
+            "test_data_row_variable": "service_assignment4",
+            "code": "service_assignment4 = ServiceAssignment(appointment_id=appointment4.id, employee_id=employee4.id)"
+        },
+        {
+            "test_data_row_variable": "part_allocation1",
+            "code": "part_allocation1 = PartAllocation(part_id=part1.id, appointment_id=appointment1.id, quantity_used=1)"
+        },
+        {
+            "test_data_row_variable": "part_allocation2",
+            "code": "part_allocation2 = PartAllocation(part_id=part2.id, appointment_id=appointment2.id, quantity_used=0)"
+        },
+        {
+            "test_data_row_variable": "part_allocation3",
+            "code": "part_allocation3 = PartAllocation(part_id=part3.id, appointment_id=appointment3.id, quantity_used=0)"
+        },
+        {
+            "test_data_row_variable": "part_allocation4",
+            "code": "part_allocation4 = PartAllocation(part_id=part4.id, appointment_id=appointment4.id, quantity_used=2)"
+        }
+    ],
+    "test_data_sqlite": "INSERT statements for test data correspond to the variable assignments above, tailored to the format of SQLite insert commands.",
+    "name": "AutoServiceShopModeling"
+}
